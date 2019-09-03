@@ -27,7 +27,7 @@ static CKComponentAnimationHooks hooksForCAAnimation(CKComponent *component, CAA
   // immediately to protect against the *caller* mutating the animation after this point but before it's used.)
   CAAnimation *copiedAnimation = [originalAnimation copy];
   return {
-    .didRemount = ^(id context){
+    .didRemount = [^(id context){
       CALayer *layer = component.viewForAnimation.layer;
       CKCAssertNotNil(layer, @"%@ has no mounted view, so it cannot be animated", [component class]);
       NSString *key = [[NSUUID UUID] UUIDString];
@@ -40,7 +40,7 @@ static CKComponentAnimationHooks hooksForCAAnimation(CKComponent *component, CAA
       }
       [layer addAnimation:copiedAnimation forKey:key];
       return [[CKAppliedAnimationContext alloc] initWithTargetLayer:layer key:key];
-    },
+    } copy],
     .cleanup = ^(CKAppliedAnimationContext *context){
       [context.targetLayer removeAnimationForKey:context.key];
     }
